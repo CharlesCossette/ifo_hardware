@@ -5,14 +5,15 @@ import numpy as np
 from cv_bridge import CvBridge
 from sensor_msgs.msg import CompressedImage
 
-def gstreamer_pipeline_string(
-    capture_width=1280,
-    capture_height=720,
-    framerate=21,
-    flip_method=0,
+def gst_pipeline_string(
+    capture_width=1920,
+    capture_height=1080,
+    framerate=30,
+    flip_method=2,
 ):
+# TODO: Connect this to a config file
     return (
-        "nvarguscamerasrc ! "
+        "nvarguscamerasrc sensor-mode=2 ! "
         "video/x-raw(memory:NVMM), "
         "width=(int)%d, height=(int)%d, "
         "format=(string)NV12, framerate=(fraction)%d/1 ! "
@@ -27,21 +28,39 @@ def gstreamer_pipeline_string(
         )
     )
 
-device = cv2.VideoCapture()
-device.open(gstreamer_pipeline_string(), cv2.CAP_GSTREAMER)
-bridge = CvBridge()
-rospy.init_node('bottom_camera')
-pub = rospy.Publisher('~image/compressed', CompressedImage, queue_size=1)
+class BottomCameraNode(object):
 
+    def __init__(self):
+        super(BottomCameraNode, self).__init__()
 
-rate = rospy.Rate(10)
+        # Creates a connection to the camera using GStreamer
+        framerate = 30 # TODO. remove hardcoding
+        self.device = cv2.VideoCapture()
+        self.device.open(
+                        gst_pipeline_string(framerate=framerate),
+                        cv2.CAP_GSTREAMER
+                        )    
+        # Initalize node and publisher
+        rospy.init_node('bottom_camera')  
+        self.pub = rospy.Publisher('~image/compressed', CompressedImage, queue_size=1)
+              
+    def run(self):
+        # Publish at dedicated rate
+        framerate = 30 # TODO. remove hardcoding
+        rate = rospy.Rate(framerate)
+        bridge = CvBridge()
+        while not rospy.is_shutdown():
+            retval, img = self.device.read()
+            img = np.uint8(img)
+            img_msg = bridge.cv2_to_compressed_imgmsg(img, dst_format='jpeg')
+            self.pub.publish(img_msg)
+            rate.sleep()
 
-while not rospy.is_shutdown():
-    retval, img = device.read()
-    img = np.uint8(img)
-    img_msg = bridge.cv2_to_compressed_imgmsg(img, dst_format='jpeg')
-    pub.publish(img_msg)
-    rate.sleep()
+    def shutdown_hook(self):
+        self.device.release()
 
-device.release()
-
+if __name__ == "__main__":
+    bottom_camera_node = BottomCameraNode()
+    rospy.on_shutdown(bottom_camera_node.shutdown_hook)
+    bottom_camera_node.run()
+    rospy.spin() 
