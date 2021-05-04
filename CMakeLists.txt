@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ifo_sensors)
+project(ifo_hardware)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -158,7 +158,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/bottom_camera_node.py
+  src/bottom_camera_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

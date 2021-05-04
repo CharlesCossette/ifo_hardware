@@ -1,7 +1,5 @@
 <launch>
-	<!-- vim: set ft=xml noet : -->
-	<!-- example launch script for PX4 based FCU's -->
-
+	<!-- Launch MAVROS to connect to PX4 -->
 	<arg name="fcu_url" default="/dev/ttyTHS1:921600" />
 	<arg name="gcs_url" default="" />
 	<arg name="tgt_system" default="1" />
@@ -11,7 +9,7 @@
 	<arg name="respawn_mavros" default="false" />
 
 	<include file="$(find mavros)/launch/node.launch">
-		<arg name="pluginlists_yaml" value="$(find ifo_sensors)/launch/ifo_px4_pluginlist.yaml" />
+		<arg name="pluginlists_yaml" value="$(find ifo_hardware)/config/ifo_px4_pluginlist.yaml" />
 		<arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
 
 		<arg name="fcu_url" value="$(arg fcu_url)" />
@@ -22,4 +20,11 @@
 		<arg name="fcu_protocol" value="$(arg fcu_protocol)" />
 		<arg name="respawn_mavros" default="$(arg respawn_mavros)" />
 	</include>
+
+	<!-- Launch the bottom camera node -->
+	<node name="bottom_camera" type="bottom_camera_node.py" pkg="ifo_hardware" />
+
+	<!-- TODO. Launch the realsense node -->
+	<!-- we need to make sure we can detect when it is plugged in or not-->
+
 </launch>
