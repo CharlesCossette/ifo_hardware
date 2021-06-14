@@ -76,7 +76,7 @@ Install Zero Tier One by following [these instructions](/decargroup/decar_home/s
 Follow [ROS Network Setup](http://wiki.ros.org/ROS/NetworkSetup) instructions, which will allow you to stream the camera feed from another computer.
 
 ## Accessing all Sensors and Actuators through ROS
-Accessing all the various sensors through ROS is a matter of installing various dependencies. 
+Accessing all the various sensors through ROS is a matter of installing various dependencies. First, clone this repository under `~/catkin_ws/src/`
 > Note: this can probably be partially automated with use of the `rosdep` tool. TODO.
 ### Intel Realsense
 Install the [realsense-ros](https://github.com/IntelRealSense/realsense-ros) package
