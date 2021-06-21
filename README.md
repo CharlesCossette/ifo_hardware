@@ -119,8 +119,12 @@ roslaunch ifo_hardware ifo_hardware.launch
 ```
 In a new terminal you can run `rqt_image_view` to check the bottom camera video feed.
 
+## Using Mocap Data for Online State Estimation
+Getting the mocap streaming its data to a linux device through ROS is a matter of installing [this package](http://wiki.ros.org/vrpn_client_ros). This can be done with
+
+    sudo apt-get update
+    sudo apt-get install ros-melodic-vrpn-client-ros
 ## TODO
 1. Add more configuration parameters to the launch file, such as which nodes to start or not. For example, for many applications, we will not need the bottom camera.
 2. Add the intel realsense node to the launch file.
 3. Play with PX4 config parameters the get the desired info, at the desired rates, through MAVROS (for example, we might want IMU data at a higher frequency)
-4. Learn how to connect to the mocap

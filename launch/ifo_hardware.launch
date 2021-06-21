@@ -1,5 +1,5 @@
 <launch>
-	<!-- Launch MAVROS to connect to PX4 -->
+	<!-- PX4 Arguments -->
 	<arg name="fcu_url" default="/dev/ttyTHS1:921600" />
 	<arg name="gcs_url" default="" />
 	<arg name="tgt_system" default="1" />
@@ -8,9 +8,17 @@
 	<arg name="fcu_protocol" default="v1.0" />
 	<arg name="respawn_mavros" default="false" />
 
+	<!-- Stream mocap data or not -->
+	<arg name="use_mocap" default="true"/>
+
+	<!-- Use Bottom Camera + Realsense -->
+	<arg name="use_vision" default="false"/>
+	<arg name="server_ip" default="192.168.1.200"/> 
+
+	<!-- Launch MAVROS to connect to PX4 -->
 	<include file="$(find mavros)/launch/node.launch">
-		<arg name="pluginlists_yaml" value="$(find ifo_hardware)/config/ifo_px4_pluginlist.yaml" />
-		<arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+		<arg name="pluginlists_yaml" value="$(find ifo_hardware)/config/ifo_mavros_pluginlist.yaml" />
+		<arg name="config_yaml" value="$(find ifo_hardware)/config/ifo_px4_config.yaml" />
 
 		<arg name="fcu_url" value="$(arg fcu_url)" />
 		<arg name="gcs_url" value="$(arg gcs_url)" />
@@ -22,9 +30,18 @@
 	</include>
 
 	<!-- Launch the bottom camera node -->
-	<node name="bottom_camera" type="bottom_camera_node.py" pkg="ifo_hardware" />
+	<group if="$(arg use_vision)">
+		<node name="bottom_camera" type="bottom_camera_node.py" pkg="ifo_hardware" />
+		<!-- TODO. Launch the realsense node -->
+		<!-- we need to make sure we can detect when it is plugged in or not-->
+	</group>
 
-	<!-- TODO. Launch the realsense node -->
-	<!-- we need to make sure we can detect when it is plugged in or not-->
+	<!-- Launch the mocap vrpn client node -->
+	<group if="$(arg use_mocap)">
+		<include file="$(find vrpn_client_ros)/launch/sample.launch">
+			<arg name="server" value="$(arg server_ip)"/>
+		</include>
+	</group>
+	
 
 </launch>
