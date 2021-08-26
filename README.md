@@ -23,12 +23,18 @@ __Connected to the Flight Computer__
 The next few sections will give instructions on setting up a ROS environment on the Nano, and have all these sensors available on various topics.
 
 ## Getting Started
-The first thing to do is to connect a mouse, keyboard, and monitor to the Nano. Then, connect to a wifi network. At this point you may choose to perform the rest of the instructions through SSH, but it can equally be done directly with a monitor connected to the Jetson Nano.
+The first thing to do is to connect a mouse, keyboard, and monitor to the Nano. Then, find a micro USB cable connected to a power source than can supply 5V with at least 2A, but ideally 3A or more. Plug it in, and wait for the nano to boot. On the home screen, if you're like me and used a 5V 2.1A power source, you may get a warning saying the system is being throttled. __Although you can do all the setup with that warning still active, this will become a problem when doing more demanding tasks, such as streaming the camera feed. You should find an adequate power source.__
+
+Connect to a wifi network with internet. At this point you may choose to perform the rest of the instructions through SSH, but for now it is recommended that this be done directly with a monitor connected to the Jetson Nano.
+
+Open a terminal and type (dont forget to connect to a wifi network)
 
 ```
 sudo apt-get update
 sudo apt-get upgrade
 ```
+The __sudo password should be__ `uvify`, if Uvify set up the nano as usual.
+
 
 If it is installed on your system, as it was when initially shipped from Uvify, disable mavlink-router as we will be replacing it with mavros
 
@@ -36,47 +42,72 @@ If it is installed on your system, as it was when initially shipped from Uvify, 
 sudo systemctl stop mavlink-router # To stop service running immediately
 sudo systemctl disable mavlink-router # Permanently disables service, takes effect after reboot
 ```
-In theory the above step does not need to be done with working with a fresh Jetson Nano image.
 
-Install ROS Melodic by following the instructions located here: http://wiki.ros.org/melodic/Installation/Ubuntu 
+Install ROS Melodic by following the instructions located here: http://wiki.ros.org/melodic/Installation/Ubuntu. Follow all the instructions on that page, all the way to section 1.6 inclusive.  (except for the last command of section 1.5, but that should have been obvious)
 
-> Note: we should try only doing the "Desktop Install" instead of the "Desktop-Full Install" as this should save space, and we will have no need for the simulators provided by the full install on the Jetson Nano.
+> Note: we could try only doing the "Desktop Install" instead of the "Desktop-Full Install" as this should save space, and we will have no need for the simulators provided by the full install on the Jetson Nano.
 
-Source the ROS commands, and add the command to `~/.bashrc` so you dont have to rerun it every time you open a new terminal.
-
-```
-source /opt/ros/melodic/setup.bash 
-echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
-```
-Install the more modern catkin tools
+Next, install the more modern catkin tools
 ```
 sudo apt-get install python-catkin-tools
 ```
+this will allow us to use the newer `catkin build` instead of `catkin_make` to build our ROS packages.
 
 Create a ROS workspace
- 
 ```
 mkdir -p ~/catkin_ws/src 
 cd ~/catkin_ws/ 
 catkin build
 source ./devel/setup.bash 
 ```
+To avoid having to re-source `devel/setup.bash` on every terminal,
 
-Install `rosdep`
+    echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
-```
-sudo apt-get install python-rosdep
-sudo rosdep init
-rosdep update
-```
 
-### Network Setup
-Install Zero Tier One by following [these instructions](/decargroup/decar_home/src/master/lab_network/lab_network.md) (optional, but useful).
+## Network Setup
+For the time being, all agents will be connected together on the same network over wifi, with a user's laptop serving as the ROS master.
 
-Follow [ROS Network Setup](http://wiki.ros.org/ROS/NetworkSetup) instructions, which will allow you to stream the camera feed from another computer.
+In theory, each IFO-S quadcopter will have a different IP address for every different network it is on. If you are developing it home, it will have a particular IP address on your home network, and if you are developing at your lab, then it will have yet another IP address on the lab's network. By going into the router setting on these respective networks, you can (and should) set static IP address for your laptop and any IFO-S quadcopter. 
+
+An alternative is to use Zero Tier One, this will set up a virtual network that all your devices can be on, each maintaining a fixed IP address regardless of where the device is in the world. As long as each device is connected to the internet.
+
+### Zero-Tier One (ZTO)
+Install and configure Zero Tier One by following [these instructions](/decargroup/decar_home/src/master/lab_network/lab_network.md).
+
+### Confiure `/etc/hosts` and `~/.ssh/config` so all machines can find each other
+This step is critical if you want to have multiple drones, or if you want to view camera feeds on your laptop wirelessly. That is, anything requiring ROS running over multiple machines. The goal is to let all the machines know the IP addresses of all the other machines (laptops and drones included), and come up with an easier "hostname" for them.
+
+Begin by opening `/etc/hosts` with whatever editor you like. You must add a line to this file of the following form
+
+    <IP_ADDRESS_OF_MACHINE> <DESIRED_HOSTNAME> <OPTIONAL_ALIAS>
+
+For example, if you set up ZTO on the drone, and gave it the ip address `172.23.130.18`, you could add
+
+    172.23.130.18 ifo001_zto
+
+We've now mapped an IP address to some arbitary hostname `ifo001_zto`. If you also do this on your laptop, you should be able to SSH into the drone by typing
+
+    ssh uvify@ifo001_zto
+
+We can actually further streamline the SSH process by adding an entry in `~/.ssh/config` on your laptop as follows:
+
+    Host ifo001_zto
+        HostName ifo001_zto
+        User uvify
+
+This simply reduces the SSH-ing step to just `ssh ifo001_zto`. 
+
+At the very minimum, you should add an entry in `/etc/hosts` for all relevant devices you will be working with. This gives any device a shortcut for identifying other devices, instead of memorizing a bunch of IP addresses.
+
+For reference: [ROS Network Setup](http://wiki.ros.org/ROS/NetworkSetup) instructions.
 
 ## Accessing all Sensors and Actuators through ROS
 Accessing all the various sensors through ROS is a matter of installing various dependencies. First, clone this repository under `~/catkin_ws/src/`
+
+    cd ~/catkin_ws/src
+    git clone https://bitbucket.org/decargroup/ifo_hardware.git
+
 > Note: this can probably be partially automated with use of the `rosdep` tool. TODO.
 ### Intel Realsense
 Install the [realsense-ros](https://github.com/IntelRealSense/realsense-ros) package
