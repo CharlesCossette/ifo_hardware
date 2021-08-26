@@ -160,6 +160,7 @@ First build the catkin workspace
     catkin build
     source ./devel/setup.bash
 
+Then, plug in a second micro-USB cable into the flight computer to power it. There is a little opening in the white plastic cover. Optionally, if you want to view the realsense output, connect a USB-C cable going from the realsense to the Jetson Nano. 
 
 Start all the relevant nodes with
 ```
