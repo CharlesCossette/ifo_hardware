@@ -23,7 +23,9 @@ __Connected to the Flight Computer__
 The next few sections will give instructions on setting up a ROS environment on the Nano, and have all these sensors available on various topics.
 
 ## Getting Started
-The first thing to do is to connect a mouse, keyboard, and monitor to the Nano. Then, find a micro USB cable connected to a power source than can supply 5V with at least 2A, but ideally 3A or more. Plug it in, and wait for the nano to boot. On the home screen, if you're like me and used a 5V 2.1A power source, you may get a warning saying the system is being throttled. __Although you can do all the setup with that warning still active, this will become a problem when doing more demanding tasks, such as streaming the camera feed. You should find an adequate power source.__
+The first thing to do is to connect a mouse, keyboard, and monitor to the Nano. Then, find a micro USB cable connected to a power source than can supply 5V with at least 2A, but ideally 3A or more. Plug it in, and wait for the nano to boot. On the home screen, you may get a warning saying the system is being throttled. This can happen if your power source is not strong enough, or if your cable is too long (and hence creating a voltage drop). __Although you can do all the setup with that warning still active, this will become a problem when doing more demanding tasks, such as streaming the camera feed. You should find an adequate power source such as a Raspberry pi power source.__ 
+
+
 
 Connect to a wifi network with internet. At this point you may choose to perform the rest of the instructions through SSH, but for now it is recommended that this be done directly with a monitor connected to the Jetson Nano.
 
@@ -119,6 +121,9 @@ Install the [realsense-ros](https://github.com/IntelRealSense/realsense-ros) pac
 sudo apt-get install ros-melodic-realsense2-camera
 ```
 For a quick demo of the realsense outside of ROS. Consider installing the "Intel Realsense Viewer" application.
+
+__Note: I'm still having trouble getting the Realsense to work well.__ Running the Jetson off the IFO's battery seems to make things work. Hence, this is somewhere you might struggle if your power source is not good enough.
+
 ### PX4 Flight Computer 
 
 The flight computer is connected to the Jetson Nano through UART. On the Nano, the flight computer will appear on `/dev/ttyTHS1` at a default baud rate of `921600`. First, give user access to the UART serial port with
@@ -166,7 +171,7 @@ Start all the relevant nodes with
 ```
 roslaunch ifo_hardware ifo_hardware.launch
 ```
-In a new terminal you can run `rqt_image_view` to check the bottom camera video feed.
+In a new terminal you can run `rqt_image_view` to check the camera video feeds. You can also type `rostopic echo /mavros/imu/data` to see the IMU data from the quadcopter.
 
 
 ## TODO
