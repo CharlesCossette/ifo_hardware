@@ -108,7 +108,10 @@ Accessing all the various sensors through ROS is a matter of installing various 
     cd ~/catkin_ws/src
     git clone https://bitbucket.org/decargroup/ifo_hardware.git
 
+Next, we will install various dependencies required for this ros package.
+
 > Note: this can probably be partially automated with use of the `rosdep` tool. TODO.
+
 ### Intel Realsense
 Install the [realsense-ros](https://github.com/IntelRealSense/realsense-ros) package
 
@@ -116,7 +119,7 @@ Install the [realsense-ros](https://github.com/IntelRealSense/realsense-ros) pac
 sudo apt-get install ros-melodic-realsense2-camera
 ```
 For a quick demo of the realsense outside of ROS. Consider installing the "Intel Realsense Viewer" application.
-### Flight Computer 
+### PX4 Flight Computer 
 
 The flight computer is connected to the Jetson Nano through UART. On the Nano, the flight computer will appear on `/dev/ttyTHS1` at a default baud rate of `921600`. First, give user access to the UART serial port with
 
@@ -134,27 +137,37 @@ sudo apt-get install ros-melodic-mavros ros-melodic-mavros-extras
 ```
 MAVROS has a dependency on some `GeographicLib` datasets for proper altitude conversions. This can be installed with
 ```
+cd ~
 wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh
 sudo bash ./install_geographiclib_datasets.sh   
+rm ./install_geographiclib_datasets.sh
 ```
 
 ### Bottom Camera
 For the bottom camera, a very basic node has been written located in `./src/bottom_camera_node.py`. Hence, there shouldnt be any specific installs required.
 
-TODO. This needs lots of expansion depending on requirements.
+TODO. This node needs lots of expansion depending on requirements.
+
+### Mocap Streaming
+Getting the mocap streaming its data to a linux device through ROS is a matter of installing [this package](http://wiki.ros.org/vrpn_client_ros). This can be done with
+
+    sudo apt-get install ros-melodic-vrpn-client-ros
 
 ### Testing - Running the Launch File
+First build the catkin workspace
+
+    cd ~/catkin_ws
+    catkin build
+    source ./devel/setup.bash
+
+
 Start all the relevant nodes with
 ```
 roslaunch ifo_hardware ifo_hardware.launch
 ```
 In a new terminal you can run `rqt_image_view` to check the bottom camera video feed.
 
-## Using Mocap Data for Online State Estimation
-Getting the mocap streaming its data to a linux device through ROS is a matter of installing [this package](http://wiki.ros.org/vrpn_client_ros). This can be done with
 
-    sudo apt-get update
-    sudo apt-get install ros-melodic-vrpn-client-ros
 ## TODO
 1. Add more configuration parameters to the launch file, such as which nodes to start or not. For example, for many applications, we will not need the bottom camera.
 2. Add the intel realsense node to the launch file.

@@ -12,8 +12,8 @@
 	<arg name="use_mocap" default="true"/>
 
 	<!-- Use Bottom Camera + Realsense -->
-	<arg name="use_vision" default="false"/>
-	<arg name="server_ip" default="192.168.1.200"/> 
+	<arg name="use_vision" default="true"/>
+	<arg name="server_ip" default="192.168.1.200"/> <!-- default for Poly -->
 
 	<!-- Launch MAVROS to connect to PX4 -->
 	<include file="$(find mavros)/launch/node.launch">
@@ -32,8 +32,9 @@
 	<!-- Launch the bottom camera node -->
 	<group if="$(arg use_vision)">
 		<node name="bottom_camera" type="bottom_camera_node.py" pkg="ifo_hardware" />
-		<!-- TODO. Launch the realsense node -->
-		<!-- we need to make sure we can detect when it is plugged in or not-->
+		<include file="$(find realsense2_camera)/launch/rs_camera.launch">
+			<!-- Arg 1, arg 2...-->
+		</include>
 	</group>
 
 	<!-- Launch the mocap vrpn client node -->
