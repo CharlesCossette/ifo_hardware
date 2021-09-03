@@ -1,4 +1,7 @@
 # Uvify IFO-S ROS Hardware Drivers
+
+[TOC]
+
 This repo is a ROS package that takes care of all the hardware interfacing with the Uvify IFO-S. Data from the various sensors are published on ROS topics, and the interfacing to the PX4 flight controller is set up with MAVROS.
 
 The Uvify IFO-S drone has two main computing units:
@@ -77,8 +80,17 @@ An alternative is to use Zero Tier One, this will set up a virtual network that 
 ### Zero-Tier One (ZTO)
 Install and configure Zero Tier One by following [these instructions](/decargroup/decar_home/src/master/lab_network/lab_network.md).
 
+### Changing the drone hostname
+Out of the box, the drone will likely have a hostname like `uvify-nano` or `uvify-jetson-nano`. While this is fine for now, for multi-robot situations, we will have no choice but to give each drone a unique hostname. Personally, I like the hostnames `ifo001, ifo002, ifo003...`, which I have used consistently throughout the entire project. To change the hostname on a drone, log in to a terminal on one of the drones and edit the `/etc/hostname` file (you will need sudo access). There should be only a single line with the previous hostname. Erase it and replace it with `ifo001` (if it is the drone with ID 001). 
+
+This next step is also very important. Edit the file `/etc/hosts`. Typically on the second line, there will be an entry similar to 
+
+    127.0.1.1 uvify-nano
+
+or whatever previous hostname that replaces `uvify-nano`. Replace `uvify-nano` with `ifo001`, or whatever corresponding unique hostname.
+
 ### Confiure `/etc/hosts` and `~/.ssh/config` so all machines can find each other
-This step is critical if you want to have multiple drones, or if you want to view camera feeds on your laptop wirelessly. That is, anything requiring ROS running over multiple machines. The goal is to let all the machines know the IP addresses of all the other machines (laptops and drones included), and come up with an easier "hostname" for them.
+This step is also critical if you want to have multiple drones, or if you want to view camera feeds on your laptop wirelessly. That is, anything requiring ROS running over multiple machines. The goal is to let all the machines know the IP addresses of all the other machines (laptops and drones included), and come up with an easier "hostname" for them.
 
 Begin by opening `/etc/hosts` with whatever editor you like. You must add a line to this file of the following form
 
@@ -86,16 +98,16 @@ Begin by opening `/etc/hosts` with whatever editor you like. You must add a line
 
 For example, if you set up ZTO on the drone, and gave it the ip address `172.23.130.18`, you could add
 
-    172.23.130.18 ifo001_zto
+    172.23.130.18 ifo001_zto ifo001
 
-We've now mapped an IP address to some arbitary hostname `ifo001_zto`. If you also do this on your laptop, you should be able to SSH into the drone by typing
+We've now mapped an IP address to some arbitary hostname `ifo001_zto`, which can also be accessed with just `ifo001`. If you also do this on your laptop, you should be able to SSH into the drone by typing
 
-    ssh uvify@ifo001_zto
+    ssh uvify@ifo001
 
 We can actually further streamline the SSH process by adding an entry in `~/.ssh/config` on your laptop as follows:
 
-    Host ifo001_zto
-        HostName ifo001_zto
+    Host ifo001
+        HostName ifo001
         User uvify
 
 This simply reduces the SSH-ing step to just `ssh ifo001_zto`. 
