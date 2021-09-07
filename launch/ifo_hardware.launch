@@ -12,7 +12,7 @@
 	<arg name="use_mocap" default="true"/>
 
 	<!-- Use Bottom Camera + Realsense -->
-	<arg name="use_vision" default="true"/>
+	<arg name="use_vision" default="false"/>
 	<arg name="server_ip" default="192.168.1.200"/> <!-- default for Poly -->
 
 	<!-- Launch MAVROS to connect to PX4 -->
