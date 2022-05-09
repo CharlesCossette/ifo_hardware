@@ -181,7 +181,7 @@ Then, plug in a second micro-USB cable into the flight computer to power it. The
 
 Start all the relevant nodes with
 ```
-roslaunch ifo_hardware ifo_hardware.launch
+roslaunch ifo_hardware hardware.launch
 ```
 In a new terminal you can run `rqt_image_view` to check the camera video feeds. You can also type `rostopic echo /mavros/imu/data` to see the IMU data from the quadcopter.
 
