@@ -1,7 +1,5 @@
 # Uvify IFO-S ROS Hardware Drivers
 
-[TOC]
-
 This repo is a ROS package that takes care of all the hardware interfacing with the Uvify IFO-S. Data from the various sensors are published on ROS topics, and the interfacing to the PX4 flight controller is set up with MAVROS.
 
 The Uvify IFO-S drone has two main computing units:
