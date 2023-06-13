@@ -33,13 +33,30 @@
 	<!-- Launch the realsense node -->
 	<group if="$(arg use_realsense)">
 		<include file="$(find realsense2_camera)/launch/rs_camera.launch">
-			<!-- Arg 1, arg 2...-->
+			<arg name="enable_gyro" value="true"/>
+			<arg name="enable_accel" value="true"/>
+			<arg name="accel_fps" value="250"/>
+			<arg name="gyro_fps" value="200"/>
+			<arg name="enable_infra1" value="true"/>
+			<arg name="enable_infra2" value="true"/>
+			<arg name="enable_color" value="true"/>
 		</include>
 	</group>
 
 	<!-- Launch the bottom camera node -->
 	<group if="$(arg use_bottom_camera)">
-		<node name="bottom_camera" type="bottom_camera_node.py" pkg="ifo_hardware" />
+
+		<remap from="video_source/raw" to="bottom_camera"/>
+
+		<include file="$(find ros_deep_learning)/launch/video_source.ros1.launch">
+			<arg name="input" value="csi://0"/>
+			<arg name="input_width" value="0"/>
+			<arg name="input_height" value="0"/>
+			<arg name="input_codec" value="unknown"/>
+			<arg name="input_loop" value="0"/>
+		</include>
+
+		<node pkg="image_transport" type="republish" name="bottom_cam_compressor" args="raw in:=bottom_camera compressed out:=bottom_camera"/>
 	</group>
 
 	<!-- Launch the mocap vrpn client node -->
