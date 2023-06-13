@@ -39,6 +39,7 @@
 			<arg name="gyro_fps" value="200"/>
 			<arg name="enable_infra1" value="true"/>
 			<arg name="enable_infra2" value="true"/>
+			<arg name="enable_color" value="true"/>
 		</include>
 	</group>
 
