@@ -40,8 +40,8 @@
 			<arg name="enable_infra1" value="true"/>
 			<arg name="enable_infra2" value="true"/>
 			<arg name="enable_color" value="true"/>
-			<arg name="infra_fps" value="20"/>
-			<arg name="color_fps" value="20"/>
+			<arg name="infra_fps" value="15"/>
+			<arg name="color_fps" value="15"/>
 		</include>
 	</group>
 
