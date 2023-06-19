@@ -50,13 +50,13 @@
 
 		<remap from="video_source/raw" to="bottom_camera"/>
 
-		<include file="$(find ros_deep_learning)/launch/video_source.ros1.launch">
-			<arg name="input" value="csi://0"/>
-			<arg name="input_width" value="0"/>
-			<arg name="input_height" value="0"/>
-			<arg name="input_codec" value="unknown"/>
-			<arg name="input_loop" value="0"/>
-		</include>
+		<node pkg="ros_deep_learning" type="video_source" name="video_source" output="screen">
+			<param name="resource" value="csi://0"/>
+			<param name="width" value="0"/>
+			<param name="height" value="0"/>
+			<param name="loop" value="0"/>
+			<param name="framerate" value="20"/>
+		</node>
 
 		<node pkg="image_transport" type="republish" name="bottom_cam_compressor" args="raw in:=bottom_camera compressed out:=bottom_camera"/>
 	</group>
